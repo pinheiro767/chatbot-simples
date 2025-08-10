@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -21,13 +21,13 @@ def get_ai_response(user_message):
         return "Não entendi. Poderia reformular a pergunta?"
 
 @app.route("/")
+def @app.route("/")
 def home():
-    return "O servidor está rodando. Abra o arquivo 'index.html' no seu navegador."
+    return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_data = request.json
-    user_message = user_data.get("message")
+    # ... (rest of your code)
     
     if not user_message:
         return jsonify({"response": "Mensagem vazia."}), 400
