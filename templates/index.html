@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Simples</title>
+    <title>Assistente IA da Prof Cláudia Pinheiro</title>
     <style>
         /* Estilos básicos para o corpo da página */
         body {
@@ -53,14 +53,32 @@
         }
 
         /* Estilos para as mensagens do usuário e da IA */
-        .message {
+        .message-container {
+            display: flex;
+            align-items: flex-start;
             margin-bottom: 15px;
+        }
+
+        .user-message-container {
+            align-self: flex-end;
+        }
+
+        .ai-message-container {
+            align-self: flex-start;
+        }
+
+        .message-icon {
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+
+        .message {
             padding: 10px 15px;
             border-radius: 15px;
             max-width: 80%;
-            position: relative;
             animation: fadeIn 0.5s ease-in-out;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -69,14 +87,12 @@
         .user-message {
             background-color: #007bff;
             color: white;
-            align-self: flex-end;
             border-bottom-right-radius: 0;
         }
 
         .ai-message {
             background-color: #f1f0f0;
             color: #333;
-            align-self: flex-start;
             border-bottom-left-radius: 0;
         }
         
@@ -124,7 +140,7 @@
 <body>
 
     <div class="chat-container">
-        <div class="chat-header">Chatbot Simples</div>
+        <div class="chat-header">Assistente IA da Prof Cláudia Pinheiro</div>
         <div class="chat-messages" id="chat-messages">
             <!-- As mensagens serão adicionadas aqui via JavaScript -->
         </div>
@@ -141,10 +157,29 @@
 
         // Adiciona uma mensagem ao chat
         function addMessage(text, sender) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+
+            const iconSpan = document.createElement('span');
+            iconSpan.classList.add('message-icon');
+            
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', sender);
             messageDiv.textContent = text;
-            chatMessages.appendChild(messageDiv);
+            
+            if (sender === 'user-message') {
+                messageContainer.classList.add('user-message-container');
+                iconSpan.textContent = '👤'; // Ícone de pessoa
+                messageContainer.appendChild(messageDiv);
+                messageContainer.appendChild(iconSpan);
+            } else {
+                messageContainer.classList.add('ai-message-container');
+                iconSpan.textContent = '🤖'; // Ícone de robô
+                messageContainer.appendChild(iconSpan);
+                messageContainer.appendChild(messageDiv);
+            }
+
+            chatMessages.appendChild(messageContainer);
             // Rola para o final para mostrar a mensagem mais recente
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -158,10 +193,18 @@
             messageInput.value = '';
 
             // Exibe uma mensagem de "digitando..." da IA
+            const aiTypingContainer = document.createElement('div');
+            aiTypingContainer.classList.add('message-container', 'ai-message-container');
+            const aiTypingIcon = document.createElement('span');
+            aiTypingIcon.classList.add('message-icon');
+            aiTypingIcon.textContent = '�';
             const aiTypingMessage = document.createElement('div');
             aiTypingMessage.classList.add('message', 'ai-message');
             aiTypingMessage.textContent = 'Digitando...';
-            chatMessages.appendChild(aiTypingMessage);
+            aiTypingContainer.appendChild(aiTypingIcon);
+            aiTypingContainer.appendChild(aiTypingMessage);
+            chatMessages.appendChild(aiTypingContainer);
+
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
             try {
@@ -177,12 +220,12 @@
                 const data = await response.json();
                 
                 // Remove a mensagem de "digitando..."
-                chatMessages.removeChild(aiTypingMessage);
+                chatMessages.removeChild(aiTypingContainer);
                 addMessage(data.response, 'ai-message');
             } catch (error) {
                 console.error('Erro:', error);
                 // Remove a mensagem de "digitando..." em caso de erro
-                chatMessages.removeChild(aiTypingMessage);
+                chatMessages.removeChild(aiTypingContainer);
                 addMessage('Desculpe, ocorreu um erro. Por favor, tente novamente.', 'ai-message');
             }
         }
@@ -196,8 +239,8 @@
         });
 
         // Mensagem inicial do chatbot
-        addMessage('Olá! Sou um chatbot de exemplo. Digite algo para começar a conversar!', 'ai-message');
+        addMessage('Olá! Eu sou o Assistente IA da Prof Cláudia Pinheiro. Em que posso ajudar?', 'ai-message');
     </script>
 </body>
 </html>
-
+�
