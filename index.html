@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot em Tempo Real</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #007bff 0%, #28a745 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .chat-container {
+            width: 400px;
+            max-width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+            position: relative;
+        }
+        .chat-header {
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+        }
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #ddd;
+            border-radius: 4px;
+        }
+        .message-box {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            justify-content: flex-end;
+        }
+        .bot-message {
+            justify-content: flex-start;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .user-message .message {
+            background: #007bff;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        .bot-message .message {
+            background: #e9ecef;
+            color: #343a40;
+            border-bottom-left-radius: 5px;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+        #send-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #send-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Chatbot IA</div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message-box bot-message">
+                <div class="message">Olá! Como posso te ajudar hoje?</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+            <button id="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const userInput = document.getElementById("user-input");
+            const userText = userInput.value.trim();
+
+            if (userText === "") return;
+
+            // Display user message
+            const chatMessages = document.getElementById("chat-messages");
+            const userMessageDiv = document.createElement("div");
+            userMessageDiv.classList.add("message-box", "user-message");
+            userMessageDiv.innerHTML = `<div class="message">${userText}</div>`;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Display "thinking" message
+            const botThinkingDiv = document.createElement("div");
+            botThinkingDiv.classList.add("message-box", "bot-message");
+            botThinkingDiv.innerHTML = `<div class="message">...</div>`;
+            chatMessages.appendChild(botThinkingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            userInput.value = "";
+            userInput.disabled = true;
+
+            // Send message to the backend
+            fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: userText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the thinking message with the AI's response
+                botThinkingDiv.innerHTML = `<div class="message">${data.response}</div>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Erro:", error);
+                botThinkingDiv.innerHTML = `<div class="message">Desculpe, ocorreu um erro.</div>`;
+            })
+            .finally(() => {
+                userInput.disabled = false;
+                userInput.focus();
+            });
+        }
+    </script>
+</body>
+</html>
