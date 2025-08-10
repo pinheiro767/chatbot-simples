@@ -8,7 +8,7 @@
         /* Estilos básicos para o corpo da página */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            background: transparent; /* Fundo transparente para o iframe */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -45,7 +45,7 @@
         .chat-container {
             width: 400px;
             max-width: 90%;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente para o efeito de blur */
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
@@ -83,10 +83,11 @@
             text-align: center;
             padding: 20px 20px 10px;
             margin-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid rgba(0,0,0,0.1); /* Borda mais suave */
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
+            background-color: rgba(255, 255, 255, 0.5); /* Fundo do header semi-transparente */
         }
 
         /* Área de exibição das mensagens */
@@ -137,7 +138,7 @@
         }
 
         .ai-message {
-            background-color: #f1f0f0;
+            background-color: rgba(255, 255, 255, 0.7); /* Mensagem da IA semi-transparente */
             color: #333;
             border-bottom-left-radius: 0;
         }
@@ -146,7 +147,7 @@
         .chat-input-container {
             display: flex;
             padding: 10px 20px 20px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid rgba(0,0,0,0.1); /* Borda mais suave */
         }
 
         /* Campo de texto */
