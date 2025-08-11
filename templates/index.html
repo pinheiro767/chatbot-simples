@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistente IA da Prof Cláudia Pinheiro</title>
+    <title>Assistência IA da Prof. Cláudia Pinheiro</title>
     <style>
         /* Estilos básicos para o corpo da página */
         body {
             font-family: 'Inter', sans-serif;
-            background: transparent; /* Fundo transparente para o iframe */
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,78 +17,30 @@
             position: relative;
         }
 
-        /* Botão flutuante para abrir o chat */
-        #floating-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.2s, background-color 0.2s;
-            z-index: 1000;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Adiciona sombra ao ícone */
-        }
-        #floating-button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        /* Container principal do chat (escondido por padrão) */
+        /* Container principal do chat */
         .chat-container {
             width: 400px;
             max-width: 90%;
-            background-color: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente para o efeito de blur */
+            background-color: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             height: 70vh;
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            transform: scale(0);
-            transform-origin: bottom right;
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            z-index: 999;
-        }
-        .chat-container.open {
-            transform: scale(1);
-        }
-
-        /* Botão para fechar o chat */
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #555;
-            transition: color 0.2s;
-        }
-        .close-button:hover {
-            color: #000;
+            position: relative;
         }
 
         /* Cabeçalho do chat */
         .chat-header {
             text-align: center;
-            padding: 20px 20px 10px;
+            padding-bottom: 10px;
             margin-bottom: 10px;
-            border-bottom: 2px solid rgba(0,0,0,0.1); /* Borda mais suave */
+            border-bottom: 2px solid #e0e0e0;
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
-            background-color: rgba(255, 255, 255, 0.5); /* Fundo do header semi-transparente */
         }
 
         /* Área de exibição das mensagens */
@@ -101,32 +53,14 @@
         }
 
         /* Estilos para as mensagens do usuário e da IA */
-        .message-container {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .user-message-container {
-            align-self: flex-end;
-        }
-
-        .ai-message-container {
-            align-self: flex-start;
-        }
-
-        .message-icon {
-            font-size: 1.5em;
-            margin: 0 10px;
-        }
-
         .message {
+            margin-bottom: 15px;
             padding: 10px 15px;
             border-radius: 15px;
             max-width: 80%;
+            position: relative;
             animation: fadeIn 0.5s ease-in-out;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -135,20 +69,22 @@
         .user-message {
             background-color: #007bff;
             color: white;
+            align-self: flex-end;
             border-bottom-right-radius: 0;
         }
 
         .ai-message {
-            background-color: rgba(255, 255, 255, 0.7); /* Mensagem da IA semi-transparente */
+            background-color: #f1f0f0;
             color: #333;
+            align-self: flex-start;
             border-bottom-left-radius: 0;
         }
         
         /* Contêiner de entrada de texto */
         .chat-input-container {
             display: flex;
-            padding: 10px 20px 20px;
-            border-top: 2px solid rgba(0,0,0,0.1); /* Borda mais suave */
+            padding-top: 10px;
+            border-top: 2px solid #e0e0e0;
         }
 
         /* Campo de texto */
@@ -187,13 +123,8 @@
 </head>
 <body>
 
-    <!-- Botão Flutuante (agora o que será exibido por padrão) -->
-    <div id="floating-button">🤖</div>
-
-    <!-- Container do Chat (inicialmente escondido) -->
-    <div class="chat-container" id="chat-container">
-        <span class="close-button" id="close-button">&times;</span>
-        <div class="chat-header">Assistente IA da Prof Cláudia Pinheiro</div>
+    <div class="chat-container">
+        <div class="chat-header">Assistência IA da Prof. Cláudia Pinheiro</div>
         <div class="chat-messages" id="chat-messages">
             <!-- As mensagens serão adicionadas aqui via JavaScript -->
         </div>
@@ -207,37 +138,41 @@
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const chatMessages = document.getElementById('chat-messages');
-        const floatingButton = document.getElementById('floating-button');
-        const chatContainer = document.getElementById('chat-container');
-        const closeButton = document.getElementById('close-button');
+        
+        // Histórico da conversa, mantido no lado do cliente
+        const chatHistory = [{
+            role: "user",
+            parts: [{
+                text: "Você é o assistente de IA da professora Cláudia Pinheiro. Seu objetivo é ajudar os alunos com dúvidas exclusivamente sobre o curso 'IA e o Sistema Nervoso', sobre temas de neurociência e IA, a relevância da IA na publicação científica, e a relevância da IA para redes sociais no contexto da neurociência. Se a pergunta não for sobre esses tópicos, responda educadamente que você não pode ajudar com aquele assunto. Responda de forma amigável e informativa, mantendo o foco no curso e nos temas relacionados."
+            }]
+        }];
 
         // Adiciona uma mensagem ao chat
         function addMessage(text, sender) {
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('message-container');
-
-            const iconSpan = document.createElement('span');
-            iconSpan.classList.add('message-icon');
-            
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', sender);
             messageDiv.textContent = text;
-            
-            if (sender === 'user-message') {
-                messageContainer.classList.add('user-message-container');
-                iconSpan.textContent = '👤'; // Ícone de pessoa
-                messageContainer.appendChild(messageDiv);
-                messageContainer.appendChild(iconSpan);
-            } else {
-                messageContainer.classList.add('ai-message-container');
-                iconSpan.textContent = '🤖'; // Ícone de robô
-                messageContainer.appendChild(iconSpan);
-                messageContainer.appendChild(messageDiv);
-            }
-
-            chatMessages.appendChild(messageContainer);
+            chatMessages.appendChild(messageDiv);
             // Rola para o final para mostrar a mensagem mais recente
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Adiciona uma mensagem de "digitando..." da IA
+        function addTypingMessage() {
+            const typingMessageDiv = document.createElement('div');
+            typingMessageDiv.classList.add('message', 'ai-message');
+            typingMessageDiv.id = 'typing-indicator';
+            typingMessageDiv.textContent = 'Digitando...';
+            chatMessages.appendChild(typingMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Remove a mensagem de "digitando..."
+        function removeTypingMessage() {
+            const typingMessageDiv = document.getElementById('typing-indicator');
+            if (typingMessageDiv) {
+                typingMessageDiv.remove();
+            }
         }
 
         // Envia a mensagem do usuário
@@ -248,20 +183,13 @@
             addMessage(userMessage, 'user-message');
             messageInput.value = '';
 
-            // Exibe uma mensagem de "digitando..." da IA
-            const aiTypingContainer = document.createElement('div');
-            aiTypingContainer.classList.add('message-container', 'ai-message-container');
-            const aiTypingIcon = document.createElement('span');
-            aiTypingIcon.classList.add('message-icon');
-            aiTypingIcon.textContent = '🤖';
-            const aiTypingMessage = document.createElement('div');
-            aiTypingMessage.classList.add('message', 'ai-message');
-            aiTypingMessage.textContent = 'Digitando...';
-            aiTypingContainer.appendChild(aiTypingIcon);
-            aiTypingContainer.appendChild(aiTypingMessage);
-            chatMessages.appendChild(aiTypingContainer);
-
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Adiciona a mensagem do usuário ao histórico
+            chatHistory.push({
+                "role": "user",
+                "parts": [{"text": userMessage}]
+            });
+            
+            addTypingMessage();
             
             try {
                 // Chama o endpoint de chat do seu servidor Flask
@@ -270,18 +198,23 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ user_message: userMessage })
+                    // Envia todo o histórico da conversa
+                    body: JSON.stringify({ chat_history: chatHistory })
                 });
 
                 const data = await response.json();
                 
-                // Remove a mensagem de "digitando..."
-                chatMessages.removeChild(aiTypingContainer);
+                removeTypingMessage();
                 addMessage(data.response, 'ai-message');
+
+                // Adiciona a resposta da IA ao histórico
+                chatHistory.push({
+                    "role": "model",
+                    "parts": [{"text": data.response}]
+                });
             } catch (error) {
                 console.error('Erro:', error);
-                // Remove a mensagem de "digitando..." em caso de erro
-                chatMessages.removeChild(aiTypingContainer);
+                removeTypingMessage();
                 addMessage('Desculpe, ocorreu um erro. Por favor, tente novamente.', 'ai-message');
             }
         }
@@ -294,17 +227,11 @@
             }
         });
 
-        // Eventos para abrir e fechar o chat
-        floatingButton.addEventListener('click', () => {
-            chatContainer.classList.add('open');
-            floatingButton.style.display = 'none';
-             // Mensagem inicial do chatbot, só aparece quando o chat é aberto
-            addMessage('Olá! Eu sou o Assistente IA da Prof Cláudia Pinheiro. Em que posso ajudar?', 'ai-message');
-        });
-
-        closeButton.addEventListener('click', () => {
-            chatContainer.classList.remove('open');
-            floatingButton.style.display = 'flex';
+        // Mensagem inicial do chatbot com a persona da Prof. Cláudia Pinheiro
+        addMessage('Olá! Eu sou o assistente de IA da professora Cláudia Pinheiro. Estou aqui para te ajudar com qualquer dúvida sobre o curso "IA e o Sistema Nervoso"! 😊', 'ai-message');
+        chatHistory.push({
+            "role": "model",
+            "parts": [{"text": "Olá! Eu sou o assistente de IA da professora Cláudia Pinheiro. Estou aqui para te ajudar com qualquer dúvida sobre o curso \"IA e o Sistema Nervoso\"! 😊"}]
         });
     </script>
 </body>
