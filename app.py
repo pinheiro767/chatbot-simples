@@ -1,3 +1,5 @@
+# Este é o arquivo app.py, que contém a lógica do servidor Flask para o chatbot.
+
 # Importa as bibliotecas necessárias do Flask e do sistema operacional
 from flask import Flask, render_template, request, jsonify
 import os
